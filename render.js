@@ -49,6 +49,16 @@ function buildGroups(translation, definitions, target) {
     group.translations = dedupe([...(group.translations || []), ...alt.words]);
   }
 
+  const defined = groups.filter((group) => group.defs.length);
+  if (defined.length) {
+    const first = defined[0];
+    for (const group of groups) {
+      if (group === first || group.defs.length || group.pos !== "phrase") continue;
+      first.translations = dedupe([...first.translations, ...group.translations]);
+      group.translations = [];
+    }
+  }
+
   return groups.filter((group) => group.translations.length || group.defs.length);
 }
 
@@ -174,7 +184,7 @@ function renderSenses(body, groups, translation, definitions) {
         el(
           "div",
           { class: "note" },
-          "Dictionary definitions could not be loaded for this word. Translation is shown above.",
+          "No English dictionary entry was found for this word. The translation is shown above.",
         ),
       );
     }
