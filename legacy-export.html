@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>IELTS Lookup — export old history</title>
+<style>
+  :root { color-scheme: light; }
+  body { margin: 0; padding: 28px; background: #f7f7fb; color: #18191f;
+         font: 15px/1.55 system-ui, "Segoe UI", sans-serif; }
+  .card { max-width: 640px; margin: 0 auto; padding: 26px; background: #fff;
+          border: 1px solid #e3e6ed; border-radius: 16px; box-shadow: 0 16px 44px rgba(22,27,45,.08); }
+  h1 { font-size: 23px; margin: 0 0 8px; letter-spacing: -.025em; }
+  p { color: #5c6372; margin: 0 0 14px; }
+  .count { font-size: 20px; font-weight: 700; color: #4f46e5; }
+  .id { margin: 0 0 16px; padding: 8px 10px; border-radius: 8px; background: #f4f5f9;
+        color: #646b7a; font: 12px/1.5 ui-monospace, Consolas, monospace; overflow-wrap: anywhere; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  button { font: inherit; font-weight: 600; padding: 9px 14px; border-radius: 9px;
+           border: 1px solid #d2d7e2; background: #fff; color: #18191f; cursor: pointer; }
+  button.primary { background: #4f46e5; border-color: #4f46e5; color: #fff; }
+  button:hover { filter: brightness(.97); }
+  .note { margin-top: 18px; padding: 12px 14px; border-radius: 10px;
+          background: #eef0ff; color: #3730a3; font-size: 13px; }
+  .note.warn { background: #fff7ed; color: #9a3412; }
+  code { background: #f2f3f7; padding: 1px 5px; border-radius: 4px; }
+  ol { margin: 10px 0 0; padding-left: 20px; color: #5c6372; font-size: 13px; }
+  li + li { margin-top: 5px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Export your old history</h1>
+  <p>This page reads history from the extension version currently loaded in Chrome. Use it <strong>before</strong> reloading the new version, because the new stable extension ID cannot see the old storage.</p>
+  <p>Words found: <span class="count" id="count">…</span></p>
+  <div class="id">Extension ID: <span id="extId">…</span></div>
+  <div class="row">
+    <button class="primary" id="json" type="button">Download JSON backup</button>
+    <button id="csv" type="button">Download CSV backup</button>
+  </div>
+  <div class="note" id="note">
+    <strong>Next:</strong> reload the new extension, open its popup, go to
+    <strong>History → Import</strong>, and choose the JSON file (preferred).
+    <ol>
+      <li>Keep this tab open until the download finishes.</li>
+      <li>Do not click Remove on the old extension card before exporting.</li>
+      <li>Routine future updates only need Reload; history will stay in place.</li>
+    </ol>
+  </div>
+</div>
+<script src="legacy-export.js"></script>
+</body>
+</html>

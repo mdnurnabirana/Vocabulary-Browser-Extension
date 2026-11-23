@@ -1,9 +1,10 @@
 {
   "manifest_version": 3,
   "name": "IELTS Lookup",
-  "version": "2.0.0",
-  "description": "Private word lookup for IELTS: Bangla meaning, pronunciation, parts of speech, synonyms, antonyms, examples, and history.",
-  "permissions": ["storage", "unlimitedStorage"],
+  "version": "2.1.0",
+  "description": "Private bilingual word lookup for IELTS: Bangla and English meanings, pronunciation, definitions, examples, synonyms, antonyms, and history.",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5LivweBeuCMXvsPZntfopKLB7gVt2M/DDjd3qlAS1f+Q8yIh+YR8WAh9TBvghfTNipCvyR4nqP4+zYhVmRxN2d+PmgpJ8mGA4TjQMH4DeMxM+JwepQLwIXdUX1svsmHKLdHyODP25sLfaqi38ro1aDw2ldIUiBSH2k8qFJA9t9uTsyokQqS2zbU3U3S0zR96jcf4z/XKon5dAqAG1lE7snVSIWVLboT9Pz+ZFyq03qLCrviN7rU9Nw/xB3vRgM54j/DiA3fRc1eQy9EaMp56uttXXsvAMqG6c1dsQrR1zZyVCFM0De8DcKIO6+u8mw84ekilhnNBe0FFIZvnleWG4QIDAQAB",
+  "permissions": ["storage", "unlimitedStorage", "downloads", "alarms"],
   "host_permissions": [
     "https://translate.googleapis.com/*",
     "https://api.dictionaryapi.dev/*",
@@ -15,15 +16,36 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["core.js", "content.js"],
+      "js": ["shared.js", "styles.js", "core.js", "api.js", "render.js", "content.js"],
       "run_at": "document_idle"
     }
   ],
-  "action": { "default_popup": "popup.html", "default_title": "IELTS Lookup" },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "IELTS Lookup",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "commands": {
     "lookup-selection": {
       "suggested_key": { "default": "Alt+Shift+D" },
       "description": "Look up the selected word now (skip the wait)"
     }
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["fonts/inter-latin.woff2", "fonts/noto-sans-bengali.woff2"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }
