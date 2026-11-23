@@ -3,66 +3,293 @@
 <head>
 <meta charset="utf-8">
 <title>IELTS Lookup</title>
+<style>
+  @font-face {
+    font-family: "IELTS UI";
+    src: url("fonts/inter-latin.woff2") format("woff2");
+    font-weight: 400 700;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "IELTS Bangla";
+    src: url("fonts/noto-sans-bengali.woff2") format("woff2");
+    font-weight: 400 700;
+    font-style: normal;
+    font-display: swap;
+  }
+</style>
 <style id="css"></style>
 <style>
-  [hidden] { display: none !important; }
-  body { margin: 0; width: 400px; min-height: 240px; max-height: 580px; overflow: auto; padding: 10px;
-         background: var(--bg); color: var(--fg); font: 14px/1.5 system-ui, "Noto Sans Bengali", "Nirmala UI", sans-serif; }
-  .tabs, .row { display: flex; gap: 6px; align-items: center; margin-bottom: 8px; }
-  .tabs button { flex: 1; }
-  .tabs button.on { border-color: var(--accent); color: var(--accent); }
-  .row > select, .row > input[type=text] { flex: 1; min-width: 0; }
+  html, body { margin: 0; width: 440px; }
+  html { max-height: 600px; }
+  body {
+    max-height: 600px; overflow-y: auto; overflow-x: hidden;
+    background: var(--bg); color: var(--fg);
+    font-family: var(--font-ui); font-size: var(--base); line-height: 1.5;
+  }
+  .app { padding: 10px 12px 16px; }
+  .topbar { display: flex; align-items: center; gap: 9px; padding: 2px 0 9px; }
+  .brand { display: flex; align-items: center; gap: 9px; flex: 1; min-width: 0; }
+  .topbar .brand { text-transform: none; letter-spacing: normal; font-size: inherit; font-weight: inherit; color: inherit; }
+  .brand img { width: 30px; height: 30px; border-radius: 8px; box-shadow: 0 2px 7px rgba(79,70,229,.25); }
+  .brand-title { font-size: 15px; font-weight: 700; letter-spacing: -.01em; line-height: 1.2; }
+  .brand-sub { font-size: 10.5px; color: var(--muted); line-height: 1.3; }
+  .tabs {
+    display: flex; gap: 4px; padding: 4px; margin-bottom: 10px;
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 12px;
+    position: sticky; top: 0; z-index: 5;
+  }
+  .tabs button {
+    flex: 1; padding: 6px 8px; border-radius: 8px;
+    font-size: 12.5px; font-weight: 600; color: var(--muted);
+  }
+  .tabs button.on { background: var(--bg); color: var(--fg); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  .searchbar { display: flex; gap: 6px; margin-bottom: 8px; }
+  .searchbar input { flex: 1; padding: 8px 10px; font-size: 14px; }
+  .recent { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+  .recent .chip { font-size: 11.5px; padding: 2px 8px; }
+  .tools { display: flex; gap: 6px; margin-bottom: 8px; }
+  .tools input { flex: 1; }
+  .tools select { width: 112px; }
+  .filter-row { display: flex; align-items: center; gap: 5px; margin-bottom: 6px; }
+  .filter {
+    padding: 3px 9px; border: 1px solid var(--line); border-radius: 999px;
+    font-size: 11.5px; font-weight: 600; color: var(--muted);
+  }
+  .filter.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-strong); }
+  .count { margin-left: auto; font-size: 11px; color: var(--faint); }
+  .hgroup {
+    margin: 11px 0 3px; font-size: 10px; font-weight: 700;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--faint);
+  }
+  .hrow {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 7px; align-items: center; padding: 8px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .hmain { min-width: 0; }
+  .hword {
+    display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis;
+    white-space: nowrap; text-align: left; font-size: 14.5px; font-weight: 650; color: var(--fg);
+  }
+  .hword:hover { color: var(--accent); }
+  .hmean {
+    display: flex; align-items: baseline; gap: 6px; min-width: 0;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    font-size: 12.5px; line-height: 1.65; color: var(--muted);
+  }
+  .hmean .bn { font-size: 14px; line-height: 1.65; }
+  .heng {
+    display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis;
+    white-space: nowrap; font-size: 11.5px; color: var(--faint); margin-top: 1px;
+  }
+  .hmeta { font-size: 10.5px; color: var(--faint); text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .hact { display: flex; gap: 1px; }
+  .hact button { width: 24px; height: 24px; border-radius: 7px; font-size: 12px; color: var(--muted); display: inline-flex; align-items: center; justify-content: center; }
+  .hact button:hover { background: var(--panel-2); color: var(--fg); }
+  .hact .star.on { color: var(--gold); }
+  .hist-actions { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; margin-top: 10px; }
   .grow { flex: 1; }
-  .field { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
-  .hrow { display: flex; align-items: center; gap: 6px; padding: 5px 0; border-bottom: 1px solid var(--line); }
-  .hrow .m { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .group { border: 1px solid var(--line); background: var(--panel); border-radius: 12px; padding: 10px 11px; margin-bottom: 8px; }
+  .group h3 { margin: 0 0 6px; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .field { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 5px 0; font-size: 12.5px; }
+  .field > span:first-child { flex: 1; min-width: 0; }
+  .field select, .field input[type="number"] { max-width: 150px; }
+  .field input[type="number"] { width: 72px; }
+  .inline { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .lang-row { padding: 5px 0; }
+  .lang-row select { flex: 1; min-width: 0; }
+  .range-row { display: flex; align-items: center; gap: 7px; }
+  .range-row input { width: 138px; }
+  .range-row output { font-size: 11px; color: var(--muted); width: 34px; text-align: right; font-variant-numeric: tabular-nums; }
+  .hint { margin: 5px 0 0; font-size: 11px; line-height: 1.45; color: var(--faint); }
+  .welcome {
+    border: 1px dashed var(--line-strong); border-radius: 14px; padding: 16px;
+    background: var(--panel); text-align: center;
+  }
+  .welcome h2 { margin: 0 0 4px; font-size: 16px; letter-spacing: -.01em; }
+  .welcome p { margin: 0; color: var(--muted); font-size: 12.5px; }
+  .toast {
+    position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 30;
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 10px; border-radius: 10px;
+    background: var(--fg); color: var(--bg); font-size: 12px;
+    box-shadow: 0 8px 26px rgba(0,0,0,.28);
+  }
+  .toast button { color: var(--accent-strong); font-weight: 700; white-space: nowrap; }
+  dialog {
+    width: calc(100% - 34px); border: 1px solid var(--line); border-radius: 14px;
+    padding: 14px; background: var(--panel); color: var(--fg); box-shadow: var(--shadow);
+  }
+  dialog::backdrop { background: rgba(0,0,0,.35); }
+  dialog h3 { margin: 0 0 6px; font-size: 15px; }
+  dialog p { margin: 0 0 12px; font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+  dialog .inline { justify-content: flex-end; }
+  .footer-note { text-align: center; color: var(--faint); font-size: 10.5px; padding-top: 3px; }
 </style>
 </head>
 <body>
-  <div class="tabs">
-    <button data-tab="look" class="on">Lookup</button>
-    <button data-tab="hist">History</button>
-    <button data-tab="set">Settings</button>
-  </div>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <img src="icons/icon48.png" alt="">
+      <div>
+        <div class="brand-title">IELTS Lookup</div>
+        <div class="brand-sub">Bangla + English, without leaving the page</div>
+      </div>
+    </div>
+    <button id="quickTheme" class="icon-btn" type="button" title="Toggle theme">◐</button>
+  </header>
 
-  <div id="look">
-    <form id="form" class="row">
-      <input id="q" type="text" placeholder="Type a word or phrase…" autocomplete="off">
-      <button>Go</button>
+  <nav class="tabs" role="tablist">
+    <button data-tab="look" class="on" type="button" role="tab">Lookup</button>
+    <button data-tab="hist" type="button" role="tab">History</button>
+    <button data-tab="set" type="button" role="tab">Settings</button>
+  </nav>
+
+  <main id="look" class="pane">
+    <form id="form" class="searchbar">
+      <input id="q" type="text" placeholder="Type a word or phrase…" autocomplete="off" spellcheck="false">
+      <button class="btn primary" type="submit">Look up</button>
     </form>
-    <div id="out"></div>
-  </div>
+    <div id="recent" class="recent"></div>
+    <div id="out" class="result" aria-live="polite"></div>
+  </main>
 
-  <div id="hist" hidden>
-    <div class="row">
-      <input id="hq" type="text" placeholder="Search history…" autocomplete="off">
-      <button id="exp" title="Download as CSV">Export CSV</button>
+  <main id="hist" class="pane" hidden>
+    <div class="tools">
+      <input id="hq" type="text" placeholder="Search words and meanings…" autocomplete="off" spellcheck="false">
+      <select id="hsort">
+        <option value="recent">Recent</option>
+        <option value="count">Most looked up</option>
+        <option value="alpha">A–Z</option>
+      </select>
+    </div>
+    <div class="filter-row">
+      <button class="filter on" data-filter="all" type="button">All</button>
+      <button class="filter" data-filter="star" type="button">Starred</button>
+      <span id="hcount" class="count"></span>
     </div>
     <div id="hlist"></div>
-    <div class="row" style="margin-top:8px">
-      <span id="hcount" class="muted"></span><span class="grow"></span>
-      <button id="hclear">Clear history</button>
+    <div class="hist-actions">
+      <button id="more" class="btn" type="button" hidden>Load more</button>
+      <span class="grow"></span>
+      <button id="expJson" class="btn" type="button">JSON</button>
+      <button id="expCsv" class="btn" type="button">CSV</button>
+      <button id="impBtn" class="btn" type="button">Import</button>
+      <button id="hclear" class="btn danger" type="button">Clear</button>
     </div>
-  </div>
+    <input id="file" type="file" accept=".json,.csv,application/json,text/csv" hidden>
+  </main>
 
-  <div id="set" hidden>
-    <label class="field"><span>Pop up when I keep a word selected</span><input id="enabled" type="checkbox"></label>
-    <label class="field"><span>Wait (seconds)</span><input id="delay" type="number" min="0.5" max="10" step="0.5" style="width:70px"></label>
-    <div class="row"><select id="src"></select><button id="swap" title="Swap languages">⇄</button><select id="tgt"></select></div>
-    <label class="field"><span>Definitions from</span>
-      <select id="dict">
-        <option value="cambridge">Cambridge</option>
-        <option value="oxford">Oxford Learner's</option>
-        <option value="free">Free Dictionary</option>
-      </select>
-    </label>
-    <label class="field"><span>Accent</span>
-      <select id="accent"><option value="uk">UK</option><option value="us">US</option></select>
-    </label>
-    <div class="row"><button id="clr">Clear saved lookups</button><span class="muted">History is kept</span></div>
-  </div>
+  <main id="set" class="pane" hidden>
+    <section class="group">
+      <h3>Appearance</h3>
+      <label class="field"><span>Theme</span>
+        <select id="theme">
+          <option value="auto">Auto</option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+      </label>
+      <label class="field"><span>Text size</span>
+        <select id="size">
+          <option value="compact">Compact</option>
+          <option value="normal">Normal</option>
+          <option value="large">Large</option>
+        </select>
+      </label>
+      <label class="field"><span>Card width</span>
+        <span class="range-row">
+          <input id="cardWidth" type="range" min="340" max="520" step="20">
+          <output id="cardWidthVal"></output>
+        </span>
+      </label>
+      <label class="field"><span>Show Bangla before English definitions</span><input id="banglaFirst" type="checkbox"></label>
+      <label class="field"><span>Show Bangla part-of-speech labels</span><input id="showPosBn" type="checkbox"></label>
+    </section>
 
-  <script src="core.js"></script>
-  <script src="popup.js"></script>
+    <section class="group">
+      <h3>Lookup</h3>
+      <label class="field"><span>Pop up when I keep a word selected</span><input id="enabled" type="checkbox"></label>
+      <label class="field"><span>Wait before lookup (seconds)</span><input id="delay" type="number" min="0.3" max="10" step="0.5"></label>
+      <label class="field"><span>Maximum selected characters</span><input id="maxChars" type="number" min="12" max="200" step="1"></label>
+      <label class="field"><span>Maximum selected words</span><input id="maxWords" type="number" min="1" max="12" step="1"></label>
+      <label class="field"><span>Look up on double-click</span><input id="doubleClick" type="checkbox"></label>
+      <div class="inline lang-row">
+        <select id="src" aria-label="Source language"></select>
+        <button id="swap" class="btn" type="button" title="Swap languages">⇄</button>
+        <select id="tgt" aria-label="Target language"></select>
+      </div>
+      <label class="field"><span>Definitions from</span>
+        <select id="dict">
+          <option value="auto">Auto (best available)</option>
+          <option value="oxford">Oxford Learner's</option>
+          <option value="cambridge">Cambridge</option>
+          <option value="free">Free Dictionary</option>
+        </select>
+      </label>
+      <label class="field"><span>Pronunciation accent</span>
+        <select id="accent"><option value="uk">UK</option><option value="us">US</option></select>
+      </label>
+      <label class="field"><span>Show IPA</span><input id="showIpa" type="checkbox"></label>
+      <label class="field"><span>Show examples</span><input id="showExamples" type="checkbox"></label>
+      <label class="field"><span>Show synonyms</span><input id="showSynonyms" type="checkbox"></label>
+      <label class="field"><span>Show antonyms</span><input id="showAntonyms" type="checkbox"></label>
+    </section>
+
+    <section class="group">
+      <h3>History &amp; backup</h3>
+      <label class="field"><span>Save new lookups automatically</span><input id="autoSave" type="checkbox"></label>
+      <label class="field"><span>Mirror history to Chrome Sync</span><input id="syncMirror" type="checkbox"></label>
+      <label class="field"><span>Daily JSON backup to Downloads</span><input id="autoBackup" type="checkbox"></label>
+      <div class="inline">
+        <button id="backupNow" class="btn" type="button">Backup now</button>
+        <button id="cacheClear" class="btn" type="button">Clear cache</button>
+      </div>
+      <p class="hint" id="backupInfo"></p>
+      <p class="hint" id="statsLine"></p>
+    </section>
+
+    <section class="group">
+      <h3>About</h3>
+      <p class="hint">Version 2.1.0 · <strong>Alt+Shift+D</strong> looks up the current selection immediately.</p>
+      <p class="hint">History stays in your browser. Sync mirror and file backups are optional. Clearing the cache never deletes history.</p>
+      <p class="footer-note">Made for private IELTS study.</p>
+    </section>
+  </main>
+</div>
+
+<div id="toast" class="toast" hidden>
+  <span id="toastMsg"></span>
+  <button id="toastAction" type="button" hidden></button>
+</div>
+
+<dialog id="importDlg">
+  <h3>Import history</h3>
+  <p id="importInfo"></p>
+  <div class="inline">
+    <button id="importCancel" class="btn" type="button">Cancel</button>
+    <button id="importReplace" class="btn" type="button">Replace</button>
+    <button id="importMerge" class="btn primary" type="button">Merge</button>
+  </div>
+</dialog>
+
+<dialog id="clearDlg">
+  <h3>Clear all history?</h3>
+  <p id="clearInfo"></p>
+  <div class="inline">
+    <button id="clearCancel" class="btn" type="button">Cancel</button>
+    <button id="clearConfirm" class="btn destructive" type="button">Delete all</button>
+  </div>
+</dialog>
+
+<script src="shared.js"></script>
+<script src="styles.js"></script>
+<script src="core.js"></script>
+<script src="api.js"></script>
+<script src="render.js"></script>
+<script src="popup.js"></script>
 </body>
 </html>
