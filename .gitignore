@@ -1,0 +1,22 @@
+# Local secrets and packaged builds
+*.pem
+*.crx
+*.zip
+private-key*
+
+# Downloaded history backups
+ielts-history-backup.json
+ielts-lookup-history-*.json
+ielts-lookup-history-*.csv
+
+# Tooling and OS files
+node_modules/
+.opencode/
+.opencode-browser/
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
+.DS_Store
+*.log
+*.tmp

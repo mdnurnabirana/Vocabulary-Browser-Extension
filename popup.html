@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>IELTS Lookup</title>
+<style id="css"></style>
+<style>
+  [hidden] { display: none !important; }
+  body { margin: 0; width: 400px; min-height: 240px; max-height: 580px; overflow: auto; padding: 10px;
+         background: var(--bg); color: var(--fg); font: 14px/1.5 system-ui, "Noto Sans Bengali", "Nirmala UI", sans-serif; }
+  .tabs, .row { display: flex; gap: 6px; align-items: center; margin-bottom: 8px; }
+  .tabs button { flex: 1; }
+  .tabs button.on { border-color: var(--accent); color: var(--accent); }
+  .row > select, .row > input[type=text] { flex: 1; min-width: 0; }
+  .grow { flex: 1; }
+  .field { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .hrow { display: flex; align-items: center; gap: 6px; padding: 5px 0; border-bottom: 1px solid var(--line); }
+  .hrow .m { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+</style>
+</head>
+<body>
+  <div class="tabs">
+    <button data-tab="look" class="on">Lookup</button>
+    <button data-tab="hist">History</button>
+    <button data-tab="set">Settings</button>
+  </div>
+
+  <div id="look">
+    <form id="form" class="row">
+      <input id="q" type="text" placeholder="Type a word or phrase…" autocomplete="off">
+      <button>Go</button>
+    </form>
+    <div id="out"></div>
+  </div>
+
+  <div id="hist" hidden>
+    <div class="row">
+      <input id="hq" type="text" placeholder="Search history…" autocomplete="off">
+      <button id="exp" title="Download as CSV">Export CSV</button>
+    </div>
+    <div id="hlist"></div>
+    <div class="row" style="margin-top:8px">
+      <span id="hcount" class="muted"></span><span class="grow"></span>
+      <button id="hclear">Clear history</button>
+    </div>
+  </div>
+
+  <div id="set" hidden>
+    <label class="field"><span>Pop up when I keep a word selected</span><input id="enabled" type="checkbox"></label>
+    <label class="field"><span>Wait (seconds)</span><input id="delay" type="number" min="0.5" max="10" step="0.5" style="width:70px"></label>
+    <div class="row"><select id="src"></select><button id="swap" title="Swap languages">⇄</button><select id="tgt"></select></div>
+    <label class="field"><span>Definitions from</span>
+      <select id="dict">
+        <option value="cambridge">Cambridge</option>
+        <option value="oxford">Oxford Learner's</option>
+        <option value="free">Free Dictionary</option>
+      </select>
+    </label>
+    <label class="field"><span>Accent</span>
+      <select id="accent"><option value="uk">UK</option><option value="us">US</option></select>
+    </label>
+    <div class="row"><button id="clr">Clear saved lookups</button><span class="muted">History is kept</span></div>
+  </div>
+
+  <script src="core.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
