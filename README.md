@@ -35,8 +35,9 @@ The `key` in `manifest.json` pins the extension ID to:
 mmbjaihepknkcajlbgehphbhadgnakee
 ```
 
-Keep the folder at a stable path. Moving it is fine; removing and re-adding it
-creates a fresh extension profile and erases local history.
+Keep the folder at a stable path. If you move it, export a backup first, then
+re-add the extension from the new path with **Load unpacked**. Do not use
+**Remove** for routine updates, because it erases local history.
 
 ## Updating without losing history
 
