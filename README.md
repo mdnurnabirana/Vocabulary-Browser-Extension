@@ -1,58 +1,84 @@
 # IELTS Lookup
 
-A private, unpacked Chrome extension for IELTS vocabulary study. Select a word on
-any page and a compact card appears with its Bangla equivalents and the English
-dictionary explanation, without leaving the page.
+A lightweight, open-source bilingual dictionary for IELTS study. Select a word on
+any page and a compact card appears with its Bangla meaning and English
+dictionary definitions — without leaving the page or opening a new tab.
 
-## What it does
+The extension is distributed as source only. There is no build step, no account,
+no telemetry, and no browser-store listing; you load it as a private unpacked
+extension.
 
-- **Bilingual card** — word, pronunciation, Bangla equivalents, then English
-  definitions grouped by part of speech.
-- **Dictionary fallback** — Oxford Learner's Dictionaries, then Cambridge, then
-  the Free Dictionary API.
+## Features
+
+- **Bilingual lookup card** — word, pronunciation, Bangla equivalents, and
+  English definitions grouped by part of speech.
+- **Dictionary fallback chain** — Oxford Learner's Dictionaries, then Cambridge,
+  then the Free Dictionary API.
 - **Study aids** — UK/US IPA, examples, synonyms, and antonyms.
-- **Popup lookup** — the same result view works from the toolbar popup.
-- **History** — every lookup is saved locally with its meaning, count, first-seen
-  date, and star. Search, sort, replay, delete, or clear with Undo.
+- **Popup lookup** — the same result view is available from the toolbar popup.
+- **History** — every lookup is saved locally with its meaning, count,
+  first-seen date, and star. Search, sort, replay, delete, or clear with Undo.
 - **Durable storage** — history survives Reload and normal unpacked updates,
   with a Chrome Sync mirror, daily JSON backups, and manual JSON/CSV import and
   export.
 - **Comfortable UI** — light/dark/auto themes, three text sizes, adjustable card
-  width, bundled Inter and Noto Sans Bengali fonts.
+  width, and bundled Inter and Noto Sans Bengali fonts.
+- **Keyboard shortcut** — `Alt+Shift+D` looks up the current selection immediately.
 
-No build step, no React, and no external UI framework.
+## Requirements
 
-## Install
+- Google Chrome, Microsoft Edge, Brave, or another Chromium-based browser with
+  Manifest V3 support (Chrome 88+ / Edge 88+).
+- An internet connection for dictionary and translation lookups.
 
-1. Open `chrome://extensions`.
-2. Turn on **Developer mode**.
-3. Click **Load unpacked** and choose this folder.
-4. Pin the extension if you want quick access.
+Firefox is not supported: the extension uses a Manifest V3 background service
+worker and Chromium's `chrome.*` extension APIs.
 
-The `key` in `manifest.json` pins the extension ID to:
+## Install (unpacked / private use)
+
+1. Download or clone this repository:
+
+   ```sh
+   git clone https://github.com/mdnurnabirana/Vocabulary-Browser-Extension.git
+   ```
+
+2. Open your browser's extension manager:
+   - Chrome: `chrome://extensions`
+   - Edge: `edge://extensions`
+   - Brave: `brave://extensions`
+3. Turn on **Developer mode**.
+4. Click **Load unpacked** and select the repository folder (the one containing
+   `manifest.json`).
+5. Pin **IELTS Lookup** to the toolbar if you want quick access.
+
+The `key` in `manifest.json` keeps the extension ID stable at:
 
 ```
 mmbjaihepknkcajlbgehphbhadgnakee
 ```
 
-Keep the folder at a stable path. If you move it, export a backup first, then
-re-add the extension from the new path with **Load unpacked**. Do not use
-**Remove** for routine updates, because it erases local history.
+Keep the folder at a stable path. If you move it, read
+[Updating and backups](#updating-and-backups) first.
 
-## Updating without losing history
+## Usage
 
-1. Replace the files in this folder with the new version.
-2. Click **Reload** on the existing extension card.
-3. Do **not** click **Remove** for routine updates. `chrome.storage.local` and
-   the sync mirror survive Reload, but Remove deletes them.
+- **Look up a word:** select a word or short phrase on any web page. The card
+  appears after a short delay.
+- **Skip the delay:** press `Alt+Shift+D` after selecting text, or use the
+  shortcut shown in `chrome://extensions/shortcuts`.
+- **Popup:** click the toolbar icon to search a word manually, browse history,
+  or change settings.
+- **Dismiss:** press `Esc` or click outside the card.
 
-The one-time move from 2.0 to 2.1 changes the extension ID because 2.1 adds the
-fixed key. Export your old history **before** reloading. See
-[MIGRATION.md](MIGRATION.md) for the exact steps.
+## Updating and backups
 
-## Backups
+Replace the files in the extension folder with the new version, then click
+**Reload** on the extension card in `chrome://extensions`.
 
-History is kept in several layers:
+Do **not** click **Remove** for routine updates. `chrome.storage.local` and the
+Chrome Sync mirror survive Reload, but Remove deletes local history.
+
+History is protected by several layers:
 
 | Layer | What it covers |
 | --- | --- |
@@ -65,13 +91,34 @@ History is kept in several layers:
 JSON preserves counts, stars, first-seen dates, and bilingual fields. CSV is for
 reading in a spreadsheet and for importing the old 2.0 export.
 
+Upgrading from version 2.0 requires a one-time export because 2.1 introduces the
+fixed manifest key. See [MIGRATION.md](MIGRATION.md) for the exact steps.
+
 ## Privacy
 
-- History stays in your browser. There is no account and no analytics.
+- History stays in your browser. There is no account, no analytics, and no
+  developer-operated server.
 - A lookup sends the selected word to Google Translate and to the dictionary
-  sites listed in `manifest.json`, through the background service worker.
-- The content script only reacts to text you select. It does not read the page
-  otherwise and does not change the host page's styles.
+  sites listed in `manifest.json`. Requests are made from the background service
+  worker, not from the page you are reading.
+- The content script only reacts to text you select. It does not read or modify
+  the rest of the page and does not change the host page's styles.
+- The `downloads` permission is used only for the optional daily JSON backup.
+- The `storage` and `unlimitedStorage` permissions keep history and settings
+  local; `alarms` schedules the daily backup and cache cleanup.
+
+## Permissions explained
+
+| Permission | Why it is needed |
+| --- | --- |
+| `storage`, `unlimitedStorage` | Save settings, cache, history, and the sync mirror |
+| `downloads` | Write the optional daily JSON backup |
+| `alarms` | Schedule daily backups and cache maintenance |
+| `translate.googleapis.com` | Fetch Bangla equivalents |
+| `api.dictionaryapi.dev` | Free Dictionary API fallback |
+| `api.datamuse.com` | Synonyms and antonyms |
+| `dictionary.cambridge.org`, `www.oxfordlearnersdictionaries.com` | English definitions and examples |
+| `<all_urls>` content script | Detect text selection on any page you visit |
 
 ## Project layout
 
@@ -92,10 +139,12 @@ reading in a spreadsheet and for importing the old 2.0 export.
 
 ## Development
 
-There is no bundler or package install. Edit the plain scripts and reload the
-extension from `chrome://extensions`.
+There is no bundler, package install, or compile step. Edit the plain scripts,
+then reload the extension from `chrome://extensions`.
 
-```powershell
+Syntax-check every script with Node.js:
+
+```sh
 node --check background.js
 node --check content.js
 node --check core.js
@@ -114,10 +163,30 @@ Useful places to start:
 - History serialization and backup policy: `background.js`
 - Settings and popup tabs: `popup.js`
 
-## Repository conventions
+To debug the background worker, open `chrome://extensions`, click **service
+worker** on the extension card, and use the DevTools console. Content-script logs
+appear in the page's own DevTools console.
 
-Commits use a short prefix such as `init:`, `feat:`, `fix:`, or `docs:`, and each
-commit carries a `Co-authored-by` trailer. Work lands on `main` through a
-`--no-ff` merge.
+## Contributing
 
-This is a personal project and is not published to the Chrome Web Store.
+Issues and pull requests are welcome.
+
+1. Fork the repository and create a branch from `main`.
+2. Keep changes focused and consistent with the existing plain-JavaScript style.
+3. Run the syntax checks above before opening a pull request.
+4. Describe the user-visible change and how you tested it in the browser.
+
+Please do not commit personal history exports, `.pem` keys, `.crx` packages, or
+other local files; `.gitignore` already covers the common cases.
+
+## Disclaimer
+
+This is an unofficial study tool. It is not affiliated with IELTS, Oxford
+University Press, Cambridge University Press, Google, or DictionaryAPI.dev.
+Dictionary content belongs to its respective owners. The extension fetches pages
+for personal study; respect the terms of service and rate limits of the sites
+involved, and do not use it for bulk scraping or redistribution.
+
+## License
+
+Released under the [MIT License](LICENSE).

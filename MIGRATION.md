@@ -47,11 +47,9 @@ survives Reload and normal version updates.
 
 ## Private key
 
-The manifest `key` is the **public** key. The matching private key is kept outside
-this extension folder:
+The manifest `key` is the **public** key. The matching private key belongs outside
+this extension folder and must never be committed. Keep it safe if you ever want
+to pack a `.crx` with the same extension ID.
 
-```
-C:\Users\mdnur\.ielts-lookup\private-key.pem
-```
-
-Keep it safe if you ever want to pack a `.crx` with the same extension ID.
+If you use your own extension key, replace the `key` field (and update the ID
+shown above) before loading the extension.
